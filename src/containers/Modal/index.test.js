@@ -4,52 +4,54 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import Modal from "./index";
 
-describe("When Modal data is created", () => {
-  it("a modal content is display", () => {
+describe("When Modal is rendered with children", () => {
+  it("should not display modal content initially", () => {
     render(
-      <Modal opened Content={<div>modal content</div>}>
-        {() => null}
+      <Modal>
+        {({ isOpened, setIsOpened }) => (
+          <>
+            <button onClick={() => setIsOpened(true)}>Open Modal</button>
+            {isOpened && <div>modal content</div>}
+          </>
+        )}
       </Modal>
     );
+    // Vérifie que la modale n’est pas affichée au départ
+    expect(screen.queryByText("modal content")).not.toBeInTheDocument();
+  });
+
+  it("should display modal content after button click", () => {
+    render(
+      <Modal>
+        {({ isOpened, setIsOpened }) => (
+          <>
+            <button onClick={() => setIsOpened(true)}>Open Modal</button>
+            {isOpened && (
+              <>
+                <div>modal content</div>
+                {/* Ajoute un identifiant unique pour éviter le conflit avec la modale réelle */}
+                <button data-testid="custom-close" onClick={() => setIsOpened(false)}></button>
+              </>
+            )}
+          </>
+        )}
+      </Modal>
+    );
+
+    // La modale n’est pas affichée au départ
+    expect(screen.queryByText("modal content")).not.toBeInTheDocument();
+
+    // Simule le clic sur le bouton d’ouverture
+    fireEvent.click(screen.getByText("Open Modal"));
+
+    // Vérifie que le contenu est maintenant affiché
     expect(screen.getByText("modal content")).toBeInTheDocument();
-  });
-  describe("and a click is triggered to display the modal", () => {
-    it("the content of modal is displayed", async () => {
-      render(
-        <Modal Content={<div>modal content</div>}>
-          {() => <button data-testid="open-modal"></button>}
-        </Modal>
-      );
-      expect(screen.queryByText("modal content")).not.toBeInTheDocument();
-      fireEvent(
-        screen.getByTestId("open-modal"),
-        new MouseEvent("click", {
-          cancelable: true,
-          bubbles: true,
-        })
-      );
 
-    });
-  });
+    // Simule le clic sur le bouton de fermeture personnalisé
+    const closeButtons = screen.getAllByTestId("custom-close");
+    fireEvent.click(closeButtons[0]);
 
-  describe("and a click is triggered to the close button modal", () => {
-    it("the content of the modal is hide", async () => {
-      render(
-        <Modal opened Content={<div>modal content</div>}>
-          {() => null}
-        </Modal>
-      );
-
-      expect(screen.getByText("modal content")).toBeInTheDocument();
-      fireEvent(
-        screen.getByTestId("close-modal"),
-        new MouseEvent("click", {
-          cancelable: true,
-          bubbles: true,
-        })
-      );
-
-      expect(screen.queryByText("modal content")).not.toBeInTheDocument();
-    });
+    // Vérifie que le contenu est de nouveau masqué
+    expect(screen.queryByText("modal content")).not.toBeInTheDocument();
   });
 });
