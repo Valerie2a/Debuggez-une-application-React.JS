@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, renderHook, screen } from "@testing-library/react";
 import Home from "./index";
 
 describe("When Form is created", () => {
@@ -29,16 +29,26 @@ describe("When Form is created", () => {
 
 
 describe("When a page is created", () => {
-  it("a list of events is displayed", () => {
-    // to implement
+  it("a list of events is displayed", async () => {
+    render(<Home />);
+  // "Catégories" est un titre toujours visible, on s'en sert pour vérifier le rendu de la section
+  const categoriesTitle = await screen.findByText("Catégories");
+  expect(categoriesTitle).toBeInTheDocument();
   })
   it("a list a people is displayed", () => {
-    // to implement
+  render(<Home />);
+  // Vérifie qu’on a bien le titre de la section
+  expect(screen.getByRole("heading", { name: "Notre équipe" })).toBeInTheDocument();
+  // Vérifie qu’on a bien un des noms des PeopleCard (exemple : Samira)
+  expect(screen.getByText("Samira")).toBeInTheDocument();
   })
-  it("a footer is displayed", () => {
-    // to implement
+  it("a footer is displayed", async () => {
+  render(<Home />);  
+  const footer = await screen.findByRole("contentinfo");
+  expect(footer).toBeInTheDocument();
   })
   it("an event card, with the last event, is displayed", () => {
-    // to implement
+  render(<Home />);
+  expect(screen.getByText("Notre derniére prestation")).toBeInTheDocument();
   })
 });
