@@ -48,25 +48,24 @@ const Slider = () => {
               </div>
             </div>
           </div>
-
+      </div>
+))}
           <div className="SlideCard__paginationContainer">
             <div className="SlideCard__pagination">
-              {byDateDesc.map((_, radioIdx) => (
+              {byDateDesc?.map((event) => (
                 <input
-                  key={`radio-${event.id || radioIdx}`}
+                  key={`radio-${event.id}`}
                   type="radio"
                   name="radio-button"
-                  checked={idx === radioIdx}
-                  readOnly
+                  checked={index === byDateDesc.indexOf(event)}
+                  onChange={() => setIndex(byDateDesc.indexOf(event))}
                 />
               ))}
             </div>
           </div>
         </div>
-      ))}
-    </div>
-  );
-};
+      );
+    };
 
 export default Slider;
 
